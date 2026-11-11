@@ -177,4 +177,30 @@ public class Grafo {
         }
         return false;
     }
+        /** RF04: elimina el vértice y todas sus conexiones. */
+    public boolean eliminarVertice(int id) {
+        NodoVertice v = buscarVertice(id);
+        if (v == null) {
+            return false;
+        }
+        // 1) Quitar todas las aristas que lo tocan (en ambos extremos)
+        while (v.getCabezaAdyacencia() != null) {
+            int idVecino = v.getCabezaAdyacencia().getDestino().getId();
+            if (!eliminarArista(id, idVecino)) {
+                quitarAdyacencia(v, idVecino); // seguridad ante estructura inconsistente
+            }
+        }
+        // 2) Quitarlo de la lista de vértices
+        if (cabeza == v) {
+            cabeza = v.getSiguiente();
+        } else {
+            NodoVertice actual = cabeza;
+            while (actual.getSiguiente() != v) {
+                actual = actual.getSiguiente();
+            }
+            actual.setSiguiente(v.getSiguiente());
+        }
+        cantidadVertices--;
+        return true;
+    }
 }
