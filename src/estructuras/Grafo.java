@@ -141,8 +141,12 @@ public class Grafo {
             v = v.getSiguiente();
         }
     }
+<<<<<<< HEAD
         // ---------- Eliminación ----------
 
+=======
+    // ---------- Eliminación ----------
+>>>>>>> main
     /** RF03: elimina la relación en ambos extremos. */
     public boolean eliminarArista(int idA, int idB) {
         NodoVertice a = buscarVertice(idA);
@@ -177,6 +181,7 @@ public class Grafo {
         }
         return false;
     }
+<<<<<<< HEAD
         /** RF04: elimina el vértice y todas sus conexiones. */
     public boolean eliminarVertice(int id) {
         NodoVertice v = buscarVertice(id);
@@ -203,4 +208,7 @@ public class Grafo {
         cantidadVertices--;
         return true;
     }
+=======
+    
+>>>>>>> main
 }
