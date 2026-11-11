@@ -141,4 +141,40 @@ public class Grafo {
             v = v.getSiguiente();
         }
     }
+    // ---------- Eliminación ----------
+    /** RF03: elimina la relación en ambos extremos. */
+    public boolean eliminarArista(int idA, int idB) {
+        NodoVertice a = buscarVertice(idA);
+        NodoVertice b = buscarVertice(idB);
+        if (a == null || b == null) {
+            return false;
+        }
+        if (!tieneAdyacente(a, idB)) {
+            return false;
+        }
+        quitarAdyacencia(a, idB);
+        quitarAdyacencia(b, idA);
+        cantidadAristas--;
+        return true;
+    }
+
+    /** Quita de la lista de 'origen' el nodo que apunta a idDestino. */
+    private boolean quitarAdyacencia(NodoVertice origen, int idDestino) {
+        NodoAdyacencia actual = origen.getCabezaAdyacencia();
+        NodoAdyacencia anterior = null;
+        while (actual != null) {
+            if (actual.getDestino().getId() == idDestino) {
+                if (anterior == null) {
+                    origen.setCabezaAdyacencia(actual.getSiguiente());
+                } else {
+                    anterior.setSiguiente(actual.getSiguiente());
+                }
+                return true;
+            }
+            anterior = actual;
+            actual = actual.getSiguiente();
+        }
+        return false;
+    }
+    
 }
