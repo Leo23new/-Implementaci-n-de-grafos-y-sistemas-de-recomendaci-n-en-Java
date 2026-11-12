@@ -110,4 +110,44 @@ public class Recomendador {
         }
         return null;
     }
+
+    /**
+     * Mayor puntaje primero; si empatan, el de menor ID (desempate determinista).
+     */
+    private static boolean esMejor(Candidato a, Candidato b) {
+        if (a.getPuntaje() != b.getPuntaje()) {
+            return a.getPuntaje() > b.getPuntaje();
+        }
+        return a.getVertice().getId() < b.getVertice().getId();
+    }
+
+    /** Ordenamiento por inserción (propio, sin librerías). */
+    private static void ordenar(ArrayList<Candidato> lista) {
+        for (int i = 1; i < lista.size(); i++) {
+            Candidato clave = lista.get(i);
+            int j = i - 1;
+            while (j >= 0 && esMejor(clave, lista.get(j))) {
+                lista.set(j + 1, lista.get(j));
+                j--;
+            }
+            lista.set(j + 1, clave);
+        }
+    }
+
+    /**
+     * RF09: los mejores 'limite' candidatos, ordenados. Null si el usuario no
+     * existe.
+     */
+    public static ArrayList<Candidato> recomendar(Grafo grafo, int idUsuario, int limite) {
+        ArrayList<Candidato> candidatos = calcularCandidatos(grafo, idUsuario);
+        if (candidatos == null) {
+            return null;
+        }
+        ordenar(candidatos);
+        ArrayList<Candidato> top = new ArrayList<>();
+        for (int i = 0; i < candidatos.size() && i < limite; i++) {
+            top.add(candidatos.get(i));
+        }
+        return top;
+    }
 }
