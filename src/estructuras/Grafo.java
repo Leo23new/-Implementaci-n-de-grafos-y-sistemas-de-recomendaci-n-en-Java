@@ -141,4 +141,142 @@ public class Grafo {
             v = v.getSiguiente();
         }
     }
+
+    /** Elimina una arista no dirigida entre dos vertices; devuelve false si no existe. */
+    public boolean eliminarArista(int idA, int idB) {
+        if (idA == idB) {
+            return false;
+        }
+        NodoVertice a = buscarVertice(idA);
+        NodoVertice b = buscarVertice(idB);
+        if (a == null || b == null) {
+            return false;
+        }
+        if (!tieneAdyacente(a, idB) || !tieneAdyacente(b, idA)) {
+            return false;
+        }
+        eliminarAdyacencia(a, idB);
+        eliminarAdyacencia(b, idA);
+        cantidadAristas--;
+        return true;
+    }
+
+    /** Elimina un vertice y todas sus conexiones con el resto del grafo. */
+    public boolean eliminarVertice(int id) {
+        NodoVertice v = buscarVertice(id);
+        if (v == null) {
+            return false;
+        }
+
+        NodoAdyacencia ady = v.getCabezaAdyacencia();
+        java.util.ArrayList<NodoVertice> vecinos = new java.util.ArrayList<>();
+        while (ady != null) {
+            vecinos.add(ady.getDestino());
+            ady = ady.getSiguiente();
+        }
+
+        for (int i = 0; i < vecinos.size(); i++) {
+            eliminarAdyacencia(vecinos.get(i), id);
+            cantidadAristas--;
+        }
+
+        if (cabeza == v) {
+            cabeza = v.getSiguiente();
+        } else {
+            NodoVertice anterior = cabeza;
+            while (anterior != null && anterior.getSiguiente() != v) {
+                anterior = anterior.getSiguiente();
+            }
+            if (anterior != null) {
+                anterior.setSiguiente(v.getSiguiente());
+            }
+        }
+
+        v.setSiguiente(null);
+        v.setCabezaAdyacencia(null);
+        cantidadVertices--;
+        return true;
+    }
+
+    /** Muestra un resumen del grafo y la integridad actual. */
+    public void mostrarEstadisticas() {
+        int aislados = 0;
+        NodoVertice actual = cabeza;
+        while (actual != null) {
+            if (actual.getGrado() == 0) {
+                aislados++;
+            }
+            actual = actual.getSiguiente();
+        }
+
+        System.out.println("Vértices: " + cantidadVertices + " · Aristas: " + cantidadAristas
+                + " · Usuarios aislados: " + aislados + " · Integridad: "
+                + (validarIntegridad() ? "CORRECTA" : "CON ERRORES"));
+    }
+
+    /** Verifica que el grafo conserve una estructura válida. */
+    public boolean validarIntegridad() {
+        if (cantidadVertices < 0 || cantidadAristas < 0) {
+            return false;
+        }
+
+        int contadorVertices = 0;
+        int contadorAristas = 0;
+        int ultimoId = -1;
+
+        NodoVertice actual = cabeza;
+        while (actual != null) {
+            if (actual.getId() <= 0 || actual.getId() <= ultimoId) {
+                return false;
+            }
+            ultimoId = actual.getId();
+            contadorVertices++;
+
+            NodoAdyacencia ady = actual.getCabezaAdyacencia();
+            int ultimoAdyacente = -1;
+            while (ady != null) {
+                if (ady.getDestino() == null) {
+                    return false;
+                }
+                int idDestino = ady.getDestino().getId();
+                if (idDestino == actual.getId() || idDestino <= ultimoAdyacente) {
+                    return false;
+                }
+                ultimoAdyacente = idDestino;
+
+                if (buscarVertice(idDestino) == null) {
+                    return false;
+                }
+                if (!tieneAdyacente(ady.getDestino(), actual.getId())) {
+                    return false;
+                }
+                contadorAristas++;
+                ady = ady.getSiguiente();
+            }
+            actual = actual.getSiguiente();
+        }
+
+        return contadorVertices == cantidadVertices && contadorAristas == cantidadAristas * 2;
+    }
+
+    private void eliminarAdyacencia(NodoVertice origen, int idDestino) {
+        NodoAdyacencia actual = origen.getCabezaAdyacencia();
+        NodoAdyacencia anterior = null;
+
+        while (actual != null && actual.getDestino().getId() != idDestino) {
+            anterior = actual;
+            actual = actual.getSiguiente();
+        }
+
+        if (actual == null) {
+            return;
+        }
+
+        if (anterior == null) {
+            origen.setCabezaAdyacencia(actual.getSiguiente());
+        } else {
+            anterior.setSiguiente(actual.getSiguiente());
+        }
+        actual.setSiguiente(null);
+    }
 }
