@@ -264,4 +264,83 @@ public class Grafo {
         cantidadVertices--;
         return true;
     }
+        // ---------- Integridad y estadísticas ----------
+
+    /** RF10: verifica que no haya duplicados, bucles, referencias inválidas ni asimetrías. */
+    public boolean validarIntegridad() {
+        boolean ok = true;
+        int contadorVertices = 0;
+        int sumaGrados = 0;
+
+        NodoVertice v = cabeza;
+        while (v != null) {
+            contadorVertices++;
+            if (v.getSiguiente() != null && v.getSiguiente().getId() <= v.getId()) {
+                System.out.println("ERROR: ID duplicado o desordenado en el vértice " + v.getId());
+                ok = false;
+            }
+            NodoAdyacencia ady = v.getCabezaAdyacencia();
+            while (ady != null) {
+                sumaGrados++;
+                NodoVertice d = ady.getDestino();
+                if (d == null || buscarVertice(d.getId()) != d) {
+                    System.out.println("ERROR: referencia inválida en el vértice " + v.getId());
+                    ok = false;
+                } else {
+                    if (d.getId() == v.getId()) {
+                        System.out.println("ERROR: autoconexión en el vértice " + v.getId());
+                        ok = false;
+                    }
+                    if (!tieneAdyacente(d, v.getId())) {
+                        System.out.println("ERROR: conexión no bidireccional " + v.getId() + " -> " + d.getId());
+                        ok = false;
+                    }
+                    NodoAdyacencia sig = ady.getSiguiente();
+                    if (sig != null && sig.getDestino() != null && sig.getDestino().getId() <= d.getId()) {
+                        System.out.println("ERROR: conexión duplicada o desordenada en el vértice " + v.getId());
+                        ok = false;
+                    }
+                }
+                ady = ady.getSiguiente();
+            }
+            v = v.getSiguiente();
+        }
+        if (contadorVertices != cantidadVertices) {
+            System.out.println("ERROR: el contador de vértices no coincide con la lista.");
+            ok = false;
+        }
+        if (sumaGrados != 2 * cantidadAristas) {
+            System.out.println("ERROR: el contador de aristas no coincide con las listas.");
+            ok = false;
+        }
+        return ok;
+    }
+
+    public void mostrarEstadisticas() {
+        System.out.println("Vértices: " + cantidadVertices);
+        System.out.println("Aristas: " + cantidadAristas);
+        if (cantidadVertices == 0) {
+            return;
+        }
+        int sumaGrados = 0;
+        int aislados = 0;
+        int maxGrado = -1;
+        NodoVertice masConectado = null;
+        NodoVertice v = cabeza;
+        while (v != null) {
+            int grado = v.getGrado();
+            sumaGrados += grado;
+            if (grado == 0) {
+                aislados++;
+            }
+            if (grado > maxGrado) {
+                maxGrado = grado;
+                masConectado = v;
+            }
+            v = v.getSiguiente();
+        }
+        System.out.println("Grado promedio: " + String.format("%.2f", (double) sumaGrados / cantidadVertices));
+        System.out.println("Más conectado: " + masConectado.getNombre() + " (" + maxGrado + " conexiones)");
+        System.out.println("Usuarios aislados: " + aislados);
+    }
 }
