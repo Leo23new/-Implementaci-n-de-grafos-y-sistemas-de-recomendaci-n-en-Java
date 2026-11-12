@@ -11,13 +11,14 @@ public class Recorridos {
             v = v.getSiguiente();
         }
     }
+    /** BFS Devuelve el orden de visita, o null si el vertice no existe */
 
-    /** RF06: BFS. Devuelve el orden de visita, o null si el vértice no existe. */
+    
     public static ArrayList<NodoVertice> bfs(Grafo grafo, int idInicio) {
         return bfsConNiveles(grafo, idInicio, null);
     }
 
-    /** BFS que además guarda el nivel de cada vértice (mismo orden que el resultado). */
+/** BFS que guarda el nivel de cada vertice mismo orden que el resultado */
     public static ArrayList<NodoVertice> bfsConNiveles(Grafo grafo, int idInicio, ArrayList<Integer> niveles) {
         NodoVertice inicio = grafo.buscarVertice(idInicio);
         if (inicio == null) {
@@ -26,7 +27,6 @@ public class Recorridos {
         reiniciarMarcas(grafo);
         ArrayList<NodoVertice> orden = new ArrayList<>();
 
-        // Cola propia con arreglos: cada vértice entra a lo sumo una vez
         NodoVertice[] cola = new NodoVertice[grafo.getCantidadVertices()];
         int[] nivelCola = new int[grafo.getCantidadVertices()];
         int frente = 0;
@@ -57,6 +57,45 @@ public class Recorridos {
                     fin++;
                 }
                 ady = ady.getSiguiente();
+            }
+        }
+        return orden;
+    }
+
+        /** DFS con pila propia. Devuelve el orden de visita, o null si no existe el vertice */
+    public static ArrayList<NodoVertice> dfs(Grafo grafo, int idInicio) {
+        NodoVertice inicio = grafo.buscarVertice(idInicio);
+        if (inicio == null) {
+            return null;
+        }
+        reiniciarMarcas(grafo);
+        ArrayList<NodoVertice> orden = new ArrayList<>();
+
+        // Pila de vertices y en paralelo, el siguiente vecino por explorar de cada uno
+        NodoVertice[] pila = new NodoVertice[grafo.getCantidadVertices()];
+        NodoAdyacencia[] siguienteVecino = new NodoAdyacencia[grafo.getCantidadVertices()];
+        int tope = -1;
+
+        inicio.setVisitado(true);
+        orden.add(inicio);
+        tope++;
+        pila[tope] = inicio;
+        siguienteVecino[tope] = inicio.getCabezaAdyacencia();
+
+        while (tope >= 0) {
+            NodoAdyacencia ady = siguienteVecino[tope];
+            if (ady == null) {
+                tope--; // ya no hay mas vecinos: retroceder
+            } else {
+                siguienteVecino[tope] = ady.getSiguiente();
+                NodoVertice vecino = ady.getDestino();
+                if (!vecino.isVisitado()) {
+                    vecino.setVisitado(true);
+                    orden.add(vecino);
+                    tope++;
+                    pila[tope] = vecino;
+                    siguienteVecino[tope] = vecino.getCabezaAdyacencia();
+                }
             }
         }
         return orden;
