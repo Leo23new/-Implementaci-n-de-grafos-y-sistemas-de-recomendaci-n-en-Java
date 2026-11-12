@@ -141,12 +141,6 @@ public class Grafo {
             v = v.getSiguiente();
         }
     }
-<<<<<<< HEAD
-        // ---------- Eliminación ----------
-
-=======
-    // ---------- Eliminación ----------
->>>>>>> main
     /** RF03: elimina la relación en ambos extremos. */
     public boolean eliminarArista(int idA, int idB) {
         NodoVertice a = buscarVertice(idA);
@@ -181,8 +175,8 @@ public class Grafo {
         }
         return false;
     }
-<<<<<<< HEAD
-        /** RF04: elimina el vértice y todas sus conexiones. */
+    
+    /** RF04: elimina el vértice y todas sus conexiones. */
     public boolean eliminarVertice(int id) {
         NodoVertice v = buscarVertice(id);
         if (v == null) {
@@ -192,7 +186,7 @@ public class Grafo {
         while (v.getCabezaAdyacencia() != null) {
             int idVecino = v.getCabezaAdyacencia().getDestino().getId();
             if (!eliminarArista(id, idVecino)) {
-                quitarAdyacencia(v, idVecino); // seguridad ante estructura inconsistente
+                quitarAdyacencia(v, idVecino); 
             }
         }
         // 2) Quitarlo de la lista de vértices
@@ -208,7 +202,40 @@ public class Grafo {
         cantidadVertices--;
         return true;
     }
-=======
-    
->>>>>>> main
+        // ---------- Eliminación ----------
+
+    /** RF03: elimina la relación en ambos extremos. */
+    public boolean eliminarArista(int idA, int idB) {
+        NodoVertice a = buscarVertice(idA);
+        NodoVertice b = buscarVertice(idB);
+        if (a == null || b == null) {
+            return false;
+        }
+        if (!tieneAdyacente(a, idB)) {
+            return false;
+        }
+        quitarAdyacencia(a, idB);
+        quitarAdyacencia(b, idA);
+        cantidadAristas--;
+        return true;
+    }
+
+    /** Quita de la lista de 'origen' el nodo que apunta a idDestino. */
+    private boolean quitarAdyacencia(NodoVertice origen, int idDestino) {
+        NodoAdyacencia actual = origen.getCabezaAdyacencia();
+        NodoAdyacencia anterior = null;
+        while (actual != null) {
+            if (actual.getDestino().getId() == idDestino) {
+                if (anterior == null) {
+                    origen.setCabezaAdyacencia(actual.getSiguiente());
+                } else {
+                    anterior.setSiguiente(actual.getSiguiente());
+                }
+                return true;
+            }
+            anterior = actual;
+            actual = actual.getSiguiente();
+        }
+        return false;
+    }
 }
