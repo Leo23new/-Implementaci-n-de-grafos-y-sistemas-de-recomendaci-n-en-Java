@@ -3,6 +3,24 @@ import estructuras.Grafo;
 import modelo.NodoAdyacencia;
 import modelo.NodoVertice;
 import java.util.ArrayList;
+
+
+/**
+ * Recorridos del grafo (BFS y DFS).
+ *
+ * Orden de exploracion documentado:
+ *  - Los vecinos de cada vertice se guardan ordenados por ID ascendente,
+ *    por lo tanto siempre se exploran del ID menor al mayor
+ *  - BFS: usa una cola visita por niveles primero el inicio, luego sus vecinos
+ *    directos, luego los vecinos de estos y asi sucesivamente
+ *  - DFS: usa una pila: avanza por el primer vecino no visitado hasta no poder
+ *    seguir y entonces retrocede (backtracking)
+ *  - Solo se visitan los vertices alcanzables desde el inicio: en un grafo
+ *    desconectado los demas componentes no aparecen
+ *  - Complejidad de ambos: O(V + E).
+ */
+
+
 public class Recorridos {
  private static void reiniciarMarcas(Grafo grafo) {
         NodoVertice v = grafo.getCabeza();
